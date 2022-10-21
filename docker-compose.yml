@@ -1,0 +1,21 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  degu:
+    image: degudiffusionv0:1.1
+    build: .
+    env_file: .env
+    environment:
+      - STABLEDIFFUSION_CACHE_DIR=stablediffusion_cache
+      - IMAGES_OUTPUT_DIRECTORY=generated
+      - PYTHONUNBUFFERED=1 # Kludge until I switch to logger
+    volumes:
+      - ./generated:/app/generated
+      - ./cache:/app/stablediffusion_cache
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
