@@ -4,4 +4,6 @@
 *.orig
 *#
 \#*
-
+.env
+cache/
+generated/

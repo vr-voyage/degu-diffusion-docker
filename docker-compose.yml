@@ -6,11 +6,13 @@ services:
     env_file: .env
     environment:
       - STABLEDIFFUSION_CACHE_DIR=stablediffusion_cache
-      - IMAGES_OUTPUT_DIRECTORY=generated
-      - PYTHONUNBUFFERED=1 # Kludge until I switch to logger
+      - IMAGES_OUTPUT_DIRECTORY=generated # Can be commented if SAVE_IMAGES_TO_DISK is set to false
+      # - SAVE_IMAGES_TO_DISK=false # If you uncomment this, you can comment the first volume
+      # - PYTHONUNBUFFERED=1 # Kludge until I switch to logger
     volumes:
-      - ./generated:/app/generated
-      - ./cache:/app/stablediffusion_cache
+      - ./generated:/app/generated # Only required if SAVE_IMAGES_TO_DISK=false isn't set
+      - ./cache:/app/stablediffusion_cache # Related to STABLEDIFFUSION_CACHE_DIR
+      - ./config:/app/config # Can be mounted in Read-Only if a 'replacers.json' file is already present
     deploy:
       resources:
         reservations:
