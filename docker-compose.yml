@@ -1,14 +1,13 @@
 version: "3.9"  # optional since v1.27.0
 services:
   degu:
-    image: degudiffusionv0:1.1
+    image: vrvoyage/degudiffusion:1.1
     build: .
     env_file: .env
     environment:
       - STABLEDIFFUSION_CACHE_DIR=stablediffusion_cache
       - IMAGES_OUTPUT_DIRECTORY=generated # Can be commented if SAVE_IMAGES_TO_DISK is set to false
       # - SAVE_IMAGES_TO_DISK=false # If you uncomment this, you can comment the first volume
-      # - PYTHONUNBUFFERED=1 # Kludge until I switch to logger
     volumes:
       - ./generated:/app/generated # Only required if SAVE_IMAGES_TO_DISK=false isn't set
       - ./cache:/app/stablediffusion_cache # Related to STABLEDIFFUSION_CACHE_DIR

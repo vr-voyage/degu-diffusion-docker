@@ -1,5 +1,5 @@
 
-FROM python:latest
+FROM python:3.10
 
 RUN git clone --depth 1 https://github.com/vr-voyage/degu-diffusion /app
 WORKDIR /app
