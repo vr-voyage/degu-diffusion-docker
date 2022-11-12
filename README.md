@@ -1,14 +1,13 @@
 # DeguDiffusion Docker image
 
-This is the Docker image of the first version of my Discord bot software
-named "DeguDiffusion", that allows you to run your own self-hosted AI
-images generation Discord bot using a local StableDiffusion installation.
+This repository contains the file to build the official Docker image of
+my Discord bot software [**DeguDiffusion**](https://github.com/vr-voyage/degu-diffusion),
+that allows you to run your own AI images generation bot on Discord
+using a local installation of StableDiffusion.
 
 ![Screenshot of a bot usage](https://github.com/vr-voyage/degu-diffusion/raw/main/screenshots/GenerateForm-Result.png)
 
 ![Screenshot of /degudiffusion form](https://github.com/vr-voyage/degu-diffusion/raw/main/screenshots/Apps-Repeat-Diffusion-Form.png)
-
-The software is available under MIT license.
 
 The concept behind it is simple :
 
@@ -23,6 +22,8 @@ The concept behind it is simple :
 
 You can of course run the bot inside Docker, while being connected to
 Discord with another account on the same machine.
+
+The software is available under MIT license.
 
 # Example setup
 
@@ -42,16 +43,18 @@ HUGGINGFACES_TOKEN=
 **docker-compose.yml**
 
 ```yaml
-version: "3.9"  # optional since v1.27.0
+version: "3.9"
 services:
   degu:
-    image: vrvoyage/degudiffusion:1.1
-    build: .
+    image: vrvoyage/degudiffusion:1.0
+    #build: .
     env_file: .env
     environment:
       - STABLEDIFFUSION_CACHE_DIR=stablediffusion_cache
       - IMAGES_OUTPUT_DIRECTORY=generated # Can be commented if SAVE_IMAGES_TO_DISK is set to false
       # - SAVE_IMAGES_TO_DISK=false # If you uncomment this, you can comment the first volume
+      # - STABLEDIFFUSION_MODE=fp16 # If you're low on VRAM
+      # - STABLEDIFFUSION_MODEL_NAME=hakurei/waifu-diffusion # If you want to use Waifu Diffusion
     volumes:
       - ./generated:/app/generated # Only required if SAVE_IMAGES_TO_DISK=false isn't set
       - ./cache:/app/stablediffusion_cache # Related to STABLEDIFFUSION_CACHE_DIR
@@ -163,12 +166,20 @@ You can view your application settings on the [Discord Developer Portal](https:/
   Spaces are allowed. No need to use quotes.  
   The directory will be created if it doesn't exist.  
   Example : `IMAGES_OUTPUT_DIRECTORY=another folder`  
-  > This setting is ignored when `SAVE_IMAGES_TO_DISK` is set to `false`.
+  > This setting is ignored when `SAVE_IMAGES_TO_DISK` is set to `false`.  
+  > In the `docker-compose.yml` sample, this setting is linked
+  > to the `./generated` mountpoint.
 
 * `SAVE_IMAGES_TO_DISK`  
   Define whether generated files are saved on the disk or not.  
   **Default** : `true`  
-  Example : `SAVE_IMAGES_TO_DISK=false`
+  Example : `SAVE_IMAGES_TO_DISK=false`  
+  > This setting is ignored when testing Stable Diffusion alone.
+
+* `STABLEDIFFUSION_MODEL_NAME`  
+  Determine the HuggingFaces model used by `StableDiffusionPipeline`.  
+  **Default** : `CompVis/stable-diffusion-v1-4`  
+  Example : `STABLEDIFFUSION_MODEL_NAME=hakurei/waifu-diffusion`
 
 * `STABLEDIFFUSION_MODE`  
   Allows you to select between different StableDiffusion modes.  
@@ -279,11 +290,6 @@ You can view your application settings on the [Discord Developer Portal](https:/
   Example : `STABLEDIFFUSION_CACHE_DIR=sd_cache`  
   > The directory will be created if it doesn't exist.
 
-* `STABLEDIFFUSION_MODEL_NAME`  
-  Determine the HuggingFaces model used by `StableDiffusionPipeline`.  
-  **Default** : `CompVis/stable-diffusion-v1-4`
-  > Do not change this unless you really know what you are doing.
-
 * `TORCH_DEVICE`  
   Determine the PyTorch device used. Default to "cuda".  
   **Default** : `cuda`  
@@ -327,9 +333,4 @@ You can view your application settings on the [Discord Developer Portal](https:/
   For example, if `DEFAULT_GUIDANCE_SCALE=7` then the displayed value
   will be `7.0`, and will take 3 characters.  
   If `FORM_GUIDANCE_SCALE_INPUT_MAX` is set to `2` characters, the form
-  will become unuseable.  
-
-# DeguDiffusion Known bugs
-
-* The 'Job done' message is sent just before the last result, due to timing issues.
-* Invoking the commands inside a Discord thread will lead to errors.
+  will become unuseable.
